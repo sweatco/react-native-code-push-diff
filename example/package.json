@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "react": "18.2.0",
-    "react-native": "0.73.4"
+    "react-native": "0.73.4",
+    "react-native-code-push-diff": "../react-native-code-push-diff-0.0.0-local.21.tgz"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
@@ -20,6 +21,8 @@
     "@react-native/babel-preset": "0.73.21",
     "@react-native/metro-config": "0.73.5",
     "@react-native/typescript-config": "0.73.1",
+    "appcenter": "^5.0.1",
+    "appcenter-cli": "^2.14.0",
     "babel-plugin-module-resolver": "^5.0.0",
     "pod-install": "^0.1.0"
   },

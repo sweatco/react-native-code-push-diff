@@ -1,0 +1,8 @@
+{
+  "name": "react-native-code-push-diff/bundle",
+  "private": true,
+  "main": "../commonjs/bundle/index.js",
+  "module": "../module/bundle/index.js",
+  "types": "../typescript/src/bundle/index.d.ts",
+  "react-native": "../src/bundle/index.ts"
+}

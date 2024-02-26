@@ -2,7 +2,9 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "react-native-code-push-diff": ["./src/index"]
+      "react-native-code-push-diff": ["./src/setup/index"],
+      "react-native-code-push-diff/setup": ["./src/setup/index"],
+      "react-native-code-push-diff/bundle": ["./src/bundle/index"],
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

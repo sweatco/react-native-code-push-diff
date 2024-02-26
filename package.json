@@ -1,15 +1,20 @@
 {
   "name": "react-native-code-push-diff",
-  "version": "0.1.0",
+  "version": "0.0.0-local.21",
   "description": "This library builds upon the foundational strengths of the react-native-code-push library, adding advanced functionality to precisely identify and manage differences between code-push builds.",
-  "main": "lib/commonjs/index",
-  "module": "lib/module/index",
-  "types": "lib/typescript/src/index.d.ts",
-  "react-native": "src/index",
-  "source": "src/index",
+  "main": "commonjs/setup/index.js",
+  "module": "module/setup/index.js",
+  "types": "typescript/src/setup/index.d.ts",
+  "react-native": "src/setup/index.ts",
+  "source": "src",
   "files": [
+    "bundle",
+    "setup",
+    "bundle_config.json",
     "src",
-    "lib",
+    "module",
+    "commonjs",
+    "typescript",
     "android",
     "ios",
     "cpp",
@@ -30,7 +35,7 @@
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
+    "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib typescript module commonjs package",
     "prepare": "bob build",
     "release": "release-it"
   },
@@ -60,6 +65,7 @@
     "@types/jest": "^28.1.2",
     "@types/react": "~17.0.21",
     "@types/react-native": "0.70.0",
+    "appcenter-cli": "^2.14.0",
     "commitlint": "^17.0.2",
     "del-cli": "^5.0.0",
     "eslint": "^8.4.1",
@@ -79,6 +85,7 @@
     "@types/react": "17.0.21"
   },
   "peerDependencies": {
+    "appcenter-cli": "*",
     "react": "*",
     "react-native": "*"
   },
@@ -130,7 +137,7 @@
   },
   "react-native-builder-bob": {
     "source": "src",
-    "output": "lib",
+    "output": "./",
     "targets": [
       "commonjs",
       "module",
@@ -141,5 +148,8 @@
         }
       ]
     ]
+  },
+  "dependencies": {
+    "simple-git": "^3.22.0"
   }
 }
