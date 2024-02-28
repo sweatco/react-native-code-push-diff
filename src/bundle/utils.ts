@@ -1,7 +1,8 @@
 import { execSync } from 'child_process'
 import * as fs from 'fs'
+import { tmpdir } from 'os'
 import * as Path from 'path'
-import type { VersionSearchParams } from './types'
+import type { BundlerConfig, CommandArgs, Os, OsOrApp, VersionSearchParams } from './types'
 
 export const ROOT = process.env.PWD ?? ''
 
@@ -68,4 +69,19 @@ export function getPlatform(app: string): string {
   const json = JSON.parse(execCommand(command))
 
   return json.os.toLowerCase()
+}
+
+const hasOs = (args: OsOrApp): args is Os => 'os' in args && (args.os === 'ios' || args.os === 'android')
+
+export function buildBundleConfig(args: CommandArgs): BundlerConfig {
+  const os = hasOs(args) ? args.os : getPlatform(args.app)
+
+  return {
+    outputDir: Path.join(tmpdir(), 'codepush-diff'),
+    entryFile: defaultEntryFile(os),
+    bundleName: os === 'ios' ? 'main.jsbundle' : `index.${os}.bundle`,
+    reinstallNodeModulesCommand: installNodeModulesCommand(),
+    ...args,
+    os,
+  }
 }

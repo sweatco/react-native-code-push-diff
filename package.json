@@ -1,6 +1,6 @@
 {
   "name": "react-native-code-push-diff",
-  "version": "0.0.0-local.21",
+  "version": "0.0.0-local.40",
   "description": "This library builds upon the foundational strengths of the react-native-code-push library, adding advanced functionality to precisely identify and manage differences between code-push builds.",
   "main": "commonjs/setup/index.js",
   "module": "module/setup/index.js",
@@ -38,6 +38,9 @@
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib typescript module commonjs package",
     "prepare": "bob build",
     "release": "release-it"
+  },
+  "bin": {
+    "code-push-diff": "./commonjs/cli/index.js"
   },
   "keywords": [
     "react-native",
@@ -89,9 +92,6 @@
     "react": "*",
     "react-native": "*"
   },
-  "workspaces": [
-    "example"
-  ],
   "packageManager": "yarn@3.6.1",
   "engines": {
     "node": ">= 18.0.0"
@@ -150,6 +150,7 @@
     ]
   },
   "dependencies": {
-    "simple-git": "^3.22.0"
+    "simple-git": "^3.22.0",
+    "yargs": "^17.7.2"
   }
 }

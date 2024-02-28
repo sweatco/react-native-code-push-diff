@@ -1,17 +1,8 @@
 import * as fs from 'fs'
-import { tmpdir } from 'os'
 import path from 'path'
 
-import {
-  defaultEntryFile,
-  info,
-  rmRf,
-  execCommand,
-  getAppVersion,
-  installNodeModulesCommand,
-  getPlatform,
-} from './utils'
-import type { BundleArgs, BundlerConfig, Os, OsOrApp } from './types'
+import { info, rmRf, execCommand, buildBundleConfig } from './utils'
+import type { BundleArgs, BundlerConfig } from './types'
 import { checkout, fetchOrigin, gitRestore, revParseHead } from './git'
 import { diffAssets, removeUnchangedAssets } from './diff'
 
@@ -20,29 +11,19 @@ const {
   runReactNativeBundleCommand,
 } = require('appcenter-cli/dist/commands/codepush/lib/react-native-utils')
 
-const hasOs = (args: OsOrApp): args is Os => 'os' in args
-
 async function bundleUnsafe(args: BundleArgs) {
-  const os = hasOs(args) ? args.os : getPlatform(args.app)
-  const { base, bundleJson, ...rest } = args
-  const bundlerConfig: BundlerConfig = {
-    outputPath: path.join(tmpdir(), 'codepush-diff'),
-    os,
-    entryFile: defaultEntryFile(os),
-    bundleName: os === 'ios' ? 'main.jsbundle' : `index.${os}.bundle`,
-    reinstallNodeModulesCommand: installNodeModulesCommand(),
-    ...rest,
-  }
-  const { outputPath } = bundlerConfig
+  const { base, bundleJson } = args
+  const bundlerConfig = buildBundleConfig(args)
+  const { outputDir } = bundlerConfig
 
-  info(`Checking version for ${os}...`)
-  const version = await getAppVersion(bundlerConfig)
   await fetchOrigin()
   const current = await revParseHead()
-  rmRf(outputPath)
-  fs.mkdirSync(outputPath)
-  const baseOutput = await checkoutAndBuild(bundlerConfig, base, outputPath)
-  const currentOutput = await build(bundlerConfig, current, outputPath)
+  rmRf(outputDir)
+  fs.mkdirSync(outputDir)
+  info(`Bundling ${base}...`)
+  const baseOutput = await checkoutAndBuild(bundlerConfig, base, outputDir)
+  info(`Bundling ${current}...`)
+  const currentOutput = await build(bundlerConfig, current, outputDir)
 
   info('Diffing...')
   const changedAssets = await diffAssets(currentOutput.outputDir, baseOutput.outputDir)
@@ -50,12 +31,12 @@ async function bundleUnsafe(args: BundleArgs) {
 
   info('Bundling...')
   writeBundleJson({ changedAssets, ...bundleJson })
-  const output = await build(bundlerConfig, current, outputPath, true)
+  const output = await build(bundlerConfig, current, outputDir, true)
   info('Removing unchanged assets...')
   await removeUnchangedAssets(output.outputDir, baseOutput.outputDir)
   info('Bundling: ✔')
 
-  return { ...output, version }
+  return { ...output }
 }
 
 export async function bundle(args: BundleArgs) {
@@ -66,10 +47,15 @@ export async function bundle(args: BundleArgs) {
   }
 }
 
-const bundleReactNative = async (outputPath: string, config: BundlerConfig, shouldBuildSourceMaps?: boolean) => {
-  const outputDir = path.join(outputPath, 'output')
+const bundleReactNative = async (outputDir: string, config: BundlerConfig, shouldBuildSourceMaps?: boolean) => {
+  const {
+    extraBundlerOptions = [],
+    sourcemapOutputDir = path.join(outputDir, 'sourcemap'),
+    extraHermesFlags = [],
+    useHermes = true,
+  } = config
+  outputDir = path.join(outputDir, 'output')
   fs.mkdirSync(outputDir)
-  const sourcemapOutputDir = path.join(outputPath, 'sourcemap')
   fs.mkdirSync(sourcemapOutputDir)
   const { bundleName, entryFile, os } = config
   const sourcemapOutput = path.join(sourcemapOutputDir, bundleName + '.map')
@@ -77,19 +63,14 @@ const bundleReactNative = async (outputPath: string, config: BundlerConfig, shou
   await runReactNativeBundleCommand(
     bundleName,
     false, // development
-    entryFile, // entryFile
-    outputDir, // outputFolder
+    entryFile,
+    outputDir,
     os, // platform
-    sourcemapOutput, // sourcemapOutput
-    ['--reset-cache'] // extraBundlerOptions
+    sourcemapOutput,
+    ['--reset-cache', ...extraBundlerOptions]
   )
-  if (shouldBuildSourceMaps) {
-    await runHermesEmitBinaryCommand(
-      bundleName,
-      outputDir,
-      sourcemapOutput,
-      [] // extraHermesFlags
-    )
+  if (shouldBuildSourceMaps && useHermes) {
+    await runHermesEmitBinaryCommand(bundleName, outputDir, sourcemapOutput, extraHermesFlags)
   }
 
   return {
