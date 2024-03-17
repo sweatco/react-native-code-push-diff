@@ -3540,7 +3540,7 @@ __metadata:
     pod-install: ^0.1.0
     react: 18.2.0
     react-native: 0.73.4
-    react-native-code-push-diff: ../react-native-code-push-diff-0.0.0-local.40.tgz
+    react-native-code-push-diff: ../react-native-code-push-diff-1.0.0-local-7.tgz
   languageName: unknown
   linkType: soft
 
@@ -7434,9 +7434,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-code-push-diff@file:../react-native-code-push-diff-0.0.0-local.40.tgz::locator=codepushdiffexample%40workspace%3A.":
-  version: 0.0.0-local.40
-  resolution: "react-native-code-push-diff@file:../react-native-code-push-diff-0.0.0-local.40.tgz::locator=codepushdiffexample%40workspace%3A."
+"react-native-code-push-diff@file:../react-native-code-push-diff-1.0.0-local-7.tgz::locator=codepushdiffexample%40workspace%3A.":
+  version: 1.0.0-local-7
+  resolution: "react-native-code-push-diff@file:../react-native-code-push-diff-1.0.0-local-7.tgz::locator=codepushdiffexample%40workspace%3A."
   dependencies:
     simple-git: ^3.22.0
     yargs: ^17.7.2
@@ -7446,7 +7446,7 @@ __metadata:
     react-native: "*"
   bin:
     code-push-diff: ./commonjs/cli/index.js
-  checksum: f36e5238d0273f72c72e2c38ac2383ed3b629a3a19d21b45b11be79f1426b74d64b2420de949294f5a1624fe72df9d04d2e85a9f8e7922616892ec2ddc60aa10
+  checksum: 7c7d97d98e255bb3d04e7bf5352dc7de20207f6bc3af2733a7ce6f93ce5aaa05ab868a80b78cadaf92dec78db95784543a2f219f5211217c935ffaea587106ed
   languageName: node
   linkType: hard
 

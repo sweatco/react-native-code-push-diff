@@ -1,11 +1,11 @@
 {
   "name": "react-native-code-push-diff",
-  "version": "0.0.0-local.40",
+  "version": "1.0.0",
   "description": "This library builds upon the foundational strengths of the react-native-code-push library, adding advanced functionality to precisely identify and manage differences between code-push builds.",
-  "main": "commonjs/setup/index.js",
-  "module": "module/setup/index.js",
-  "types": "typescript/src/setup/index.d.ts",
-  "react-native": "src/setup/index.ts",
+  "main": "commonjs/react-native/index.js",
+  "module": "module/react-native/index.js",
+  "types": "typescript/src/react-native/index.d.ts",
+  "react-native": "src/react-native/index.ts",
   "source": "src",
   "files": [
     "bundle",

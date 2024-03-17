@@ -13,7 +13,7 @@
   "dependencies": {
     "react": "18.2.0",
     "react-native": "0.73.4",
-    "react-native-code-push-diff": "../react-native-code-push-diff-0.0.0-local.40.tgz"
+    "react-native-code-push-diff": "../react-native-code-push-diff-1.0.0-local-7.tgz"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

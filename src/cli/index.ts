@@ -29,7 +29,7 @@ yargs(hideBin(process.argv))
         .positional('app', { type: 'string', demandOption: true, alias: ['platform', 'os'] })
         .option('base', { type: 'string', demandOption: true }),
     async (args) => {
-      const result = await bundle(args)
+      const result = await bundle({ ...args })
       console.log(result)
     }
   )
@@ -39,29 +39,31 @@ yargs(hideBin(process.argv))
     (yargs) =>
       appcenterArgs(yargs)
         .option('app', { type: 'string', demandOption: true, alias: ['a'] })
-        .option('base', { type: 'string', demandOption: true }),
+        .option('base', { type: 'string', demandOption: true })
+        .option('rest', { type: 'string', default: '' }),
     async (args) => {
-      const bundlerConfig = buildBundleConfig(args)
+      const bundlerConfig = buildBundleConfig({ ...args })
       const version = args.version ?? (await getAppVersion(bundlerConfig))
       const result = await bundle({ ...bundlerConfig, base: args.base })
 
-      const keys = [
-        ['-a', args.app],
-        ['-c', result.outputDir],
-        ['-t', version],
-        ['-d', args.deploymentName],
-        ['--description', args.description],
-        ['--disabled', args.disabled],
-        ['--mandatory', args.mandatory],
-        ['--private-key-path', args.privateKeyPath],
-        ['--rollout', args.rollout],
-        ['--disable-duplicate-release-error', args.disableDuplicateReleaseError],
-      ]
-        .filter(([, value]) => value !== undefined)
-        .map(([key, value]) => `${key} ${value}`)
-        .join(' ')
+      const keys =
+        [
+          ['-a', args.app],
+          ['-c', result.outputDir],
+          ['-t', version],
+          ['-d', args.deploymentName],
+          ['--description', args.description],
+          ['--disabled', args.disabled],
+          ['--mandatory', args.mandatory],
+          ['--private-key-path', args.privateKeyPath],
+          ['--rollout', args.rollout],
+          ['--disable-duplicate-release-error', args.disableDuplicateReleaseError],
+        ]
+          .filter(([, value]) => value !== undefined)
+          .map(([key, value]) => `${key} ${value}`)
+          .join(' ') + ` ${args.rest}`
 
-      const command = `appcenter codepush release-react ${keys}`
+      const command = `appcenter codepush release ${keys}`
 
       info(`Realising bundle with command: ${command}`)
 

@@ -1,3 +1,5 @@
+export type Hashes = Record<string, string>
+
 export interface VersionSearchParams {
   os: string
   version?: string
@@ -17,7 +19,7 @@ export interface BundlerConfig {
   outputDir: string
   extraBundlerOptions?: string[]
   sourcemapOutput?: string
-  sourcemapOutputDir?: string
+  sourcemapOutputDir: string
   useHermes?: boolean
   extraHermesFlags?: string[]
 }
@@ -28,10 +30,7 @@ export type Os = { os: string }
 export type App = { app: string }
 export type OsOrApp = Os | App
 
-export type CommandArgs = Omit<Config, 'os'> &
-  OsOrApp & {
-    bundleJson?: Record<string, unknown | null | undefined>
-  }
+export type CommandArgs = Omit<Config, 'os'> & OsOrApp
 
 export type BundleArgs = CommandArgs & {
   base: string

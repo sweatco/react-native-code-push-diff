@@ -53,6 +53,8 @@ export const info = (message: string) => console.info(`[CodePushDiff] ${message}
 
 export const rmRf = (pathToRemove: string) => fs.rmSync(pathToRemove, { recursive: true, force: true })
 
+export const mkdir = (pathToCreate: string) => fs.mkdirSync(pathToCreate, { recursive: true })
+
 export function installNodeModulesCommand() {
   if (fileExists(Path.join(ROOT, 'yarn.lock')) || fileExists(Path.join(ROOT, '.yarnrc.yml'))) {
     return 'yarn install'
@@ -78,10 +80,11 @@ export function buildBundleConfig(args: CommandArgs): BundlerConfig {
 
   return {
     outputDir: Path.join(tmpdir(), 'codepush-diff'),
-    entryFile: defaultEntryFile(os),
+    sourcemapOutputDir: Path.join(tmpdir(), args.sourcemapOutput ?? 'codepush-diff-sourcemap'),
     bundleName: os === 'ios' ? 'main.jsbundle' : `index.${os}.bundle`,
     reinstallNodeModulesCommand: installNodeModulesCommand(),
     ...args,
     os,
+    entryFile: args.entryFile ?? defaultEntryFile(os),
   }
 }

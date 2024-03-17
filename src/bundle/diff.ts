@@ -1,10 +1,9 @@
 import * as fs from 'fs'
 import path from 'path'
 import crypto from 'crypto'
-import { fileExists } from './utils'
 import { assetExts } from './assetExts'
+import type { Hashes } from './types'
 
-const FILE_TYPES = new Set(assetExts)
 const HASH_ALGORITHM = 'sha256'
 
 export function ext(filePath: string) {
@@ -32,11 +31,11 @@ function getAllFiles(folderName: string, result: string[] = [], prefix = '') {
   return result
 }
 
-async function fileHash(filePath: fs.PathLike) {
+export async function fileHash(filePath: fs.PathLike) {
   const readStream = fs.createReadStream(filePath)
   const hashStream = crypto.createHash(HASH_ALGORITHM)
 
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     readStream
       .pipe(hashStream)
       .on('error', reject)
@@ -49,42 +48,24 @@ async function fileHash(filePath: fs.PathLike) {
   })
 }
 
-export async function diffAssets(currentOutput: string, baseOutput: string) {
-  const changed = []
-  for (const filePath of getAllFiles(currentOutput)) {
-    if (!fileExists(path.join(baseOutput, filePath))) {
-      changed.push(filePath)
-      continue
-    }
-    if (!FILE_TYPES.has(ext(filePath))) {
-      continue
-    }
-    const [currentHash, baseHash] = await Promise.all([
-      fileHash(path.join(currentOutput, filePath)),
-      fileHash(path.join(baseOutput, filePath)),
-    ])
-    if (currentHash !== baseHash) {
-      changed.push(filePath)
+export async function hashes(output: string) {
+  const map: Hashes = {}
+  const filteTypes = await assetExts()
+
+  for (const filePath of getAllFiles(output)) {
+    if (filteTypes.includes(ext(filePath))) {
+      const hash = await fileHash(path.join(output, filePath))
+      map[hash] = filePath
     }
   }
 
-  return changed
+  return map
 }
 
-export async function removeUnchangedAssets(currentOutput: string, baseOutput: string) {
-  for (const filePath of getAllFiles(currentOutput)) {
-    if (!FILE_TYPES.has(ext(filePath))) {
-      continue
-    }
-    if (!fileExists(path.join(baseOutput, filePath))) {
-      continue
-    }
-    const [currentHash, baseHash] = await Promise.all([
-      fileHash(path.join(currentOutput, filePath)),
-      fileHash(path.join(baseOutput, filePath)),
-    ])
-    if (currentHash === baseHash) {
-      fs.rmSync(path.join(currentOutput, filePath))
+export async function removeUnchangedAssets(output: string, current: Hashes, base: Hashes) {
+  for (const [hash, filePath] of Object.entries(current)) {
+    if (base[hash]) {
+      fs.rmSync(path.join(output, filePath))
     }
   }
 }

@@ -1,64 +1,54 @@
-import * as fs from 'fs'
 import path from 'path'
+import * as fs from 'fs'
+import { tmpdir } from 'os'
 
-import { info, rmRf, execCommand, buildBundleConfig } from './utils'
-import type { BundleArgs, BundlerConfig } from './types'
-import { checkout, fetchOrigin, gitRestore, revParseHead } from './git'
-import { diffAssets, removeUnchangedAssets } from './diff'
+import { info, rmRf, execCommand, buildBundleConfig, mkdir } from './utils'
+import type { BundleArgs, BundlerConfig, Hashes } from './types'
+import { checkout, fetchOrigin, gitRestore } from './git'
+import { hashes, removeUnchangedAssets } from './diff'
 
 const {
   runHermesEmitBinaryCommand,
   runReactNativeBundleCommand,
 } = require('appcenter-cli/dist/commands/codepush/lib/react-native-utils')
 
-async function bundleUnsafe(args: BundleArgs) {
-  const { base, bundleJson } = args
+export async function bundle(args: BundleArgs) {
+  const { base } = args
   const bundlerConfig = buildBundleConfig(args)
-  const { outputDir } = bundlerConfig
-
-  await fetchOrigin()
-  const current = await revParseHead()
-  rmRf(outputDir)
-  fs.mkdirSync(outputDir)
-  info(`Bundling ${base}...`)
-  const baseOutput = await checkoutAndBuild(bundlerConfig, base, outputDir)
-  info(`Bundling ${current}...`)
-  const currentOutput = await build(bundlerConfig, current, outputDir)
-
-  info('Diffing...')
-  const changedAssets = await diffAssets(currentOutput.outputDir, baseOutput.outputDir)
-  info('Diffing: ✔')
+  const baseHashes = await readBaseHashes(bundlerConfig, base)
 
   info('Bundling...')
-  writeBundleJson({ changedAssets, ...bundleJson })
-  const output = await build(bundlerConfig, current, outputDir, true)
+  process.env.CODE_PUSH_PLATFORM = bundlerConfig.os
+  const currentOutput = await bundleReactNative(
+    {
+      ...bundlerConfig,
+      extraBundlerOptions: [
+        ...(bundlerConfig.extraBundlerOptions ?? []),
+        '--config',
+        path.join(__dirname, 'metro.config.js'),
+      ],
+    },
+    true
+  )
+  const currentHashes = await hashes(currentOutput.outputDir)
   info('Removing unchanged assets...')
-  await removeUnchangedAssets(output.outputDir, baseOutput.outputDir)
+  await removeUnchangedAssets(bundlerConfig.outputDir, currentHashes, baseHashes)
   info('Bundling: ✔')
 
-  return { ...output }
+  return currentOutput
 }
 
-export async function bundle(args: BundleArgs) {
-  try {
-    return await bundleUnsafe(args)
-  } finally {
-    fs.writeFileSync(bundleJsPath, JSON.stringify({}, null, 2))
-  }
-}
-
-const bundleReactNative = async (outputDir: string, config: BundlerConfig, shouldBuildSourceMaps?: boolean) => {
-  const {
-    extraBundlerOptions = [],
-    sourcemapOutputDir = path.join(outputDir, 'sourcemap'),
-    extraHermesFlags = [],
-    useHermes = true,
-  } = config
-  outputDir = path.join(outputDir, 'output')
-  fs.mkdirSync(outputDir)
-  fs.mkdirSync(sourcemapOutputDir)
+const bundleReactNative = async (config: BundlerConfig, shouldBuildSourceMaps?: boolean) => {
+  const { extraBundlerOptions = [], sourcemapOutputDir, extraHermesFlags = [], useHermes = true, outputDir } = config
+  rmRf(outputDir)
+  mkdir(outputDir)
+  rmRf(sourcemapOutputDir)
+  mkdir(sourcemapOutputDir)
   const { bundleName, entryFile, os } = config
   const sourcemapOutput = path.join(sourcemapOutputDir, bundleName + '.map')
+
+  info(`Using ${config.reinstallNodeModulesCommand} to install node modules`)
+  execCommand(config.reinstallNodeModulesCommand)
 
   await runReactNativeBundleCommand(
     bundleName,
@@ -80,33 +70,11 @@ const bundleReactNative = async (outputDir: string, config: BundlerConfig, shoul
   }
 }
 
-const isStdoutError = (error: any): error is { stdout: string } => typeof error?.stdout === 'string'
-
-const build = async (bundlerConfig: BundlerConfig, commit: string, prefix: string, shouldBuildSourceMaps = false) => {
+const checkoutAndBuild = async (bundlerConfig: BundlerConfig, commit: string) => {
   try {
-    const tmpPath = path.join(prefix, commit.replaceAll(/\.|\//g, '_'))
-    rmRf(tmpPath)
-    fs.mkdirSync(tmpPath)
-    info(`Bundling for ${commit}`)
-    info(`Using ${bundlerConfig.reinstallNodeModulesCommand} to install node modules`)
-    execCommand(bundlerConfig.reinstallNodeModulesCommand)
-    const output = await bundleReactNative(tmpPath, bundlerConfig, shouldBuildSourceMaps)
-
-    return output
-  } catch (error) {
-    if (isStdoutError(error)) {
-      const stdout = error.stdout.toString()
-      console.error(stdout)
-      throw new Error(stdout)
-    }
-    throw error
-  }
-}
-
-const checkoutAndBuild = async (bundlerConfig: BundlerConfig, commit: string, prefix: string) => {
-  try {
+    await fetchOrigin()
     checkout(commit)
-    const output = await build(bundlerConfig, commit, prefix)
+    const output = await bundleReactNative(bundlerConfig, false)
 
     return output
   } finally {
@@ -114,12 +82,15 @@ const checkoutAndBuild = async (bundlerConfig: BundlerConfig, commit: string, pr
   }
 }
 
-const root = process.env.PWD ?? '.'
-const bundleJsPath = path.join(root, 'node_modules', 'react-native-code-push-diff', 'bundle_config.json')
+const readBaseHashes = async (bundlerConfig: BundlerConfig, base: string): Promise<Hashes> => {
+  if (!process.env.CHANGED_ASSETS_PATH) {
+    info(`Bundling for ${base}`)
+    const baseOutput = await checkoutAndBuild(bundlerConfig, base)
+    const baseHashes = await hashes(baseOutput.outputDir)
+    const changedAssetsPath = path.join(tmpdir(), 'changed-assets.json')
+    fs.writeFileSync(changedAssetsPath, JSON.stringify(baseHashes))
+    process.env.CHANGED_ASSETS_PATH = changedAssetsPath
+  }
 
-function writeBundleJson(json: object) {
-  const content = JSON.parse(fs.readFileSync(bundleJsPath, 'utf-8'))
-  const stringifedContent = JSON.stringify({ ...content, ...json }, null, 2)
-  info(`Writting bundle json with content\n${stringifedContent}\nto ${bundleJsPath}`)
-  fs.writeFileSync(bundleJsPath, stringifedContent)
+  return JSON.parse(fs.readFileSync(process.env.CHANGED_ASSETS_PATH, 'utf8'))
 }

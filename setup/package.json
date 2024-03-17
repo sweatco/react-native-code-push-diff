@@ -1,8 +1,8 @@
 {
   "name": "react-native-code-push-diff/setup",
   "private": true,
-  "main": "../commonjs/setup/index.js",
-  "module": "../module/setup/index.js",
-  "types": "../typescript/src/setup/index.d.ts",
-  "react-native": "../src/setup/index.ts"
+  "main": "../commonjs/react-native/setup.js",
+  "module": "../module/react-native/setup.js",
+  "types": "../typescript/src/react-native/setup.d.ts",
+  "react-native": "../src/react-native/setup.ts"
 }

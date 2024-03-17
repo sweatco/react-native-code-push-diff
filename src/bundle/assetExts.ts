@@ -1,12 +1,7 @@
-import path from 'path'
-import { ROOT } from './utils'
+import { loadConfig } from 'metro'
 
-const metroConfig = require(path.join(ROOT, 'metro.config.js'))
+export async function assetExts() {
+  const config = await loadConfig()
 
-const { assetExts } = metroConfig.resolver
-
-if (!assetExts) {
-  throw new Error('There is no assetExts metro.config.js')
+  return config.resolver.assetExts
 }
-
-export { assetExts }
