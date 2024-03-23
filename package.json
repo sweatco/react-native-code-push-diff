@@ -1,6 +1,6 @@
 {
   "name": "react-native-code-push-diff",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "This library builds upon the foundational strengths of the react-native-code-push library, adding advanced functionality to precisely identify and manage differences between code-push builds.",
   "main": "commonjs/react-native/index.js",
   "module": "module/react-native/index.js",
