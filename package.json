@@ -49,14 +49,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sweatco/react-native--code-push-diff.git"
+    "url": "git+https://github.com/sweatco/react-native-code-push-diff.git"
   },
   "author": "Ivan Kuchaev <gregoreygonza@gmail.com> (https://github.com/Augustach)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sweatco/react-native--code-push-diff/issues"
+    "url": "https://github.com/sweatco/react-native-code-push-diff/issues"
   },
-  "homepage": "https://github.com/sweatco/react-native--code-push-diff#readme",
+  "homepage": "https://github.com/sweatco/react-native-code-push-diff#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
