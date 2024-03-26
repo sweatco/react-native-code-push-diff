@@ -1,4 +1,5 @@
-import { execSync } from 'child_process'
+import child from 'child_process'
+import util from 'util'
 import * as fs from 'fs'
 import { tmpdir } from 'os'
 import * as Path from 'path'
@@ -39,7 +40,12 @@ export function defaultEntryFile(platform: string): string {
   throw new Error(`Entry file "index.${platform}.js" or "index.js" does not exist.`)
 }
 
-export const execCommand = (command: string) => execSync(command).toString().trim()
+export async function execCommand(command: string) {
+  const exec = util.promisify(child.exec)
+  const result = await exec(command)
+
+  return result
+}
 
 export function fileExists(file: fs.PathLike) {
   try {
@@ -68,7 +74,7 @@ export function installNodeModulesCommand() {
 
 export function getPlatform(app: string): string {
   const command = `appcenter apps show --app ${app} --output json`
-  const json = JSON.parse(execCommand(command))
+  const json = JSON.parse(child.execSync(command).toString().trim())
 
   return json.os.toLowerCase()
 }

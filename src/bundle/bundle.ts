@@ -39,16 +39,23 @@ export async function bundle(args: BundleArgs) {
 }
 
 const bundleReactNative = async (config: BundlerConfig, shouldBuildSourceMaps?: boolean) => {
-  const { extraBundlerOptions = [], sourcemapOutputDir, extraHermesFlags = [], useHermes = true, outputDir } = config
+  const {
+    bundleName,
+    entryFile,
+    os,
+    extraBundlerOptions = [],
+    sourcemapOutputDir,
+    sourcemapOutput = path.join(sourcemapOutputDir, bundleName + '.map'),
+    extraHermesFlags = [],
+    useHermes = true,
+    outputDir,
+  } = config
   rmRf(outputDir)
   mkdir(outputDir)
-  rmRf(sourcemapOutputDir)
-  mkdir(sourcemapOutputDir)
-  const { bundleName, entryFile, os } = config
-  const sourcemapOutput = path.join(sourcemapOutputDir, bundleName + '.map')
+  mkdir(path.dirname(sourcemapOutput))
 
   info(`Using ${config.reinstallNodeModulesCommand} to install node modules`)
-  execCommand(config.reinstallNodeModulesCommand)
+  await execCommand(config.reinstallNodeModulesCommand)
 
   await runReactNativeBundleCommand(
     bundleName,
@@ -73,7 +80,7 @@ const bundleReactNative = async (config: BundlerConfig, shouldBuildSourceMaps?: 
 const checkoutAndBuild = async (bundlerConfig: BundlerConfig, commit: string) => {
   try {
     await fetchOrigin()
-    checkout(commit)
+    await checkout(commit)
     const output = await bundleReactNative(bundlerConfig, false)
 
     return output
