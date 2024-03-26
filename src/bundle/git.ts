@@ -1,16 +1,17 @@
 import simpleGit from 'simple-git'
 import { info } from './utils'
 
+const git = simpleGit()
+
 export function fetchOrigin() {
-  return simpleGit().fetch('origin')
+  return git.fetch('origin')
 }
 
-export function checkout(commit: string) {
+export async function checkout(commit: string) {
   info(`Switch to ${commit}`)
-  return simpleGit().raw(['switch', '--detach', commit])
+  await git.checkout(commit)
 }
 
 export async function gitRestore() {
-  await simpleGit().raw(['restore', '.'])
-  await simpleGit().raw(['switch', '-'])
+  await git.raw(['switch', '-'])
 }
