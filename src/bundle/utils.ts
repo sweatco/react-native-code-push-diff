@@ -88,9 +88,9 @@ export function buildBundleConfig(args: CommandArgs): BundlerConfig {
     outputDir: Path.join(tmpdir(), 'codepush-diff'),
     sourcemapOutputDir: Path.join(tmpdir(), args.sourcemapOutput ?? 'codepush-diff-sourcemap'),
     bundleName: os === 'ios' ? 'main.jsbundle' : `index.${os}.bundle`,
-    reinstallNodeModulesCommand: installNodeModulesCommand(),
     ...args,
     os,
     entryFile: args.entryFile ?? defaultEntryFile(os),
+    reinstallNodeModulesCommand: args.reinstallNodeModulesCommand ?? installNodeModulesCommand(),
   }
 }

@@ -54,7 +54,7 @@ const bundleReactNative = async (config: BundlerConfig, shouldBuildSourceMaps?: 
   mkdir(outputDir)
   mkdir(path.dirname(sourcemapOutput))
 
-  info(`Using ${config.reinstallNodeModulesCommand} to install node modules`)
+  info(`Using '${config.reinstallNodeModulesCommand}' to install node modules`)
   await execCommand(config.reinstallNodeModulesCommand)
 
   await runReactNativeBundleCommand(

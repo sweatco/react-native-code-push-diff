@@ -1,6 +1,6 @@
 import type { Argv } from 'yargs'
 
-export const appcenterArgs = (yargs: Argv<{}>) =>
+export const appcenterArgs = <T = {}>(yargs: Argv<T>) =>
   yargs
     .option('deployment-name', { alias: 'd', default: 'Staging', type: 'string' })
     .option('description', { type: 'string' })

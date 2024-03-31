@@ -6,28 +6,18 @@ import { appcenterArgs } from './appcenterArgs'
 import { buildBundleConfig, getAppVersion, info } from '../bundle/utils'
 import { bundle } from '../bundle/bundle'
 import { execSync } from 'child_process'
+import { bundleArgs } from './bundleArgs'
 
 yargs(hideBin(process.argv))
-  .command(
-    'target <app>',
-    'Get the version of the app that will be uploaded to AppCenter.',
-    (yargs) =>
-      appcenterArgs(yargs).positional('app', { type: 'string', demandOption: true, alias: ['platform', 'os'] }),
-    async (args) => {
-      console.log(args)
-      const bundlerConfig = buildBundleConfig(args)
-      const version = await getAppVersion(bundlerConfig)
-
-      console.log(version)
-    }
-  )
   .command(
     'bundle <app>',
     'Bundle the app for release.',
     (yargs) =>
-      appcenterArgs(yargs)
-        .positional('app', { type: 'string', demandOption: true, alias: ['platform', 'os'] })
-        .option('base', { type: 'string', demandOption: true }),
+      bundleArgs(appcenterArgs(yargs)).positional('app', {
+        type: 'string',
+        demandOption: true,
+        alias: ['platform', 'os'],
+      }),
     async (args) => {
       const result = await bundle({ ...args })
       console.log(result)
@@ -36,11 +26,7 @@ yargs(hideBin(process.argv))
   .command(
     'release-react',
     'Build and release a React Native app to AppCenter.',
-    (yargs) =>
-      appcenterArgs(yargs)
-        .option('app', { type: 'string', demandOption: true, alias: ['a'] })
-        .option('base', { type: 'string', demandOption: true })
-        .option('rest', { type: 'string', default: '' }),
+    (yargs) => bundleArgs(appcenterArgs(yargs)).option('app', { type: 'string', demandOption: true, alias: ['a'] }),
     async (args) => {
       const bundlerConfig = buildBundleConfig({ ...args })
       const version = args.version ?? (await getAppVersion(bundlerConfig))
