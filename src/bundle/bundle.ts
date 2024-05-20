@@ -78,15 +78,12 @@ const bundleReactNative = async (config: BundlerConfig, shouldBuildSourceMaps?: 
 }
 
 const checkoutAndBuild = async (bundlerConfig: BundlerConfig, commit: string) => {
-  try {
-    await fetchOrigin()
-    await checkout(commit)
-    const output = await bundleReactNative(bundlerConfig, false)
+  await fetchOrigin()
+  await checkout(commit)
+  const output = await bundleReactNative(bundlerConfig, false)
+  await gitRestore()
 
-    return output
-  } finally {
-    await gitRestore()
-  }
+  return output
 }
 
 const readBaseHashes = async (bundlerConfig: BundlerConfig, base: string): Promise<Hashes> => {
