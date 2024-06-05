@@ -1,17 +1,12 @@
-import simpleGit from 'simple-git'
+import child from 'child_process'
 import { info } from './utils'
-
-const git = simpleGit()
-
-export async function fetchOrigin() {
-  await git.fetch('origin')
-}
 
 export async function checkout(commit: string) {
   info(`Switch to ${commit}`)
-  await git.checkout(commit)
+  child.execSync(`git checkout ${commit}`)
 }
 
 export async function gitRestore() {
-  await git.raw(['switch', '-'])
+  info('Restore to previous branch')
+  child.execSync('git switch -')
 }

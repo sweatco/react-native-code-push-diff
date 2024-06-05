@@ -4,7 +4,7 @@ import { tmpdir } from 'os'
 
 import { info, rmRf, execCommand, buildBundleConfig, mkdir } from './utils'
 import type { BundleArgs, BundlerConfig, Hashes } from './types'
-import { checkout, fetchOrigin, gitRestore } from './git'
+import { checkout, gitRestore } from './git'
 import { hashes, removeUnchangedAssets } from './diff'
 
 const {
@@ -78,7 +78,6 @@ const bundleReactNative = async (config: BundlerConfig, shouldBuildSourceMaps?: 
 }
 
 const checkoutAndBuild = async (bundlerConfig: BundlerConfig, commit: string) => {
-  await fetchOrigin()
   await checkout(commit)
   const output = await bundleReactNative(bundlerConfig, false)
   await gitRestore()
