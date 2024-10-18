@@ -5,3 +5,6 @@ extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autoli
 rootProject.name = 'CodePushDiffExample'
 include ':app'
 includeBuild('../node_modules/@react-native/gradle-plugin')
+
+include ':app', ':react-native-code-push'
+project(':react-native-code-push').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-code-push/android/app')
