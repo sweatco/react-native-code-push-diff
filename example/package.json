@@ -2,7 +2,6 @@
   "name": "codepushdiffexample",
   "version": "0.0.1",
   "private": true,
-  "root": true,
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
@@ -11,21 +10,22 @@
     "build:ios": "cd ios && xcodebuild -workspace CodePushDiffExample.xcworkspace -scheme CodePushDiffExample -configuration Debug -sdk iphonesimulator CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ GCC_OPTIMIZATION_LEVEL=0 GCC_PRECOMPILE_PREFIX_HEADER=YES ASSETCATALOG_COMPILER_OPTIMIZATION=time DEBUG_INFORMATION_FORMAT=dwarf COMPILER_INDEX_STORE_ENABLE=NO"
   },
   "dependencies": {
-    "react": "18.2.0",
-    "react-native": "0.73.4",
-    "react-native-code-push-diff": "../react-native-code-push-diff-1.0.0-local-7.tgz"
+    "react": "18.3.1",
+    "react-native": "0.75.4",
+    "react-native-code-push-diff": "workspace:*"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/preset-env": "^7.20.0",
     "@babel/runtime": "^7.20.0",
-    "@react-native/babel-preset": "0.73.21",
-    "@react-native/metro-config": "0.73.5",
-    "@react-native/typescript-config": "0.73.1",
+    "@react-native/babel-preset": "0.75.4",
+    "@react-native/metro-config": "0.75.4",
+    "@react-native/typescript-config": "0.75.4",
     "appcenter": "^5.0.1",
     "appcenter-cli": "^2.14.0",
     "babel-plugin-module-resolver": "^5.0.0",
-    "pod-install": "^0.1.0"
+    "pod-install": "^0.1.0",
+    "react-native-builder-bob": "^0.30.2"
   },
   "engines": {
     "node": ">=18"
