@@ -22,6 +22,7 @@ export interface BundlerConfig {
   sourcemapOutputDir: string
   useHermes?: boolean
   extraHermesFlags?: string[]
+  bundleCommand?: string
 }
 
 type Config = Partial<BundlerConfig> & VersionSearchParams
