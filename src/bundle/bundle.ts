@@ -6,11 +6,9 @@ import { info, rmRf, execCommand, buildBundleConfig, mkdir } from './utils'
 import type { BundleArgs, BundlerConfig, Hashes } from './types'
 import { checkout, gitRestore } from './git'
 import { hashes, removeUnchangedAssets } from './diff'
+import { metroBundle } from './metroBundle'
 
-const {
-  runHermesEmitBinaryCommand,
-  runReactNativeBundleCommand,
-} = require('appcenter-cli/dist/commands/codepush/lib/react-native-utils')
+const { runHermesEmitBinaryCommand } = require('appcenter-cli/dist/commands/codepush/lib/react-native-utils')
 
 export async function bundle(args: BundleArgs) {
   const { base } = args
@@ -40,6 +38,7 @@ export async function bundle(args: BundleArgs) {
 
 const bundleReactNative = async (config: BundlerConfig, shouldBuildSourceMaps?: boolean) => {
   const {
+    bundleCommand,
     bundleName,
     entryFile,
     os,
@@ -57,15 +56,17 @@ const bundleReactNative = async (config: BundlerConfig, shouldBuildSourceMaps?: 
   info(`Using '${config.reinstallNodeModulesCommand}' to install node modules`)
   await execCommand(config.reinstallNodeModulesCommand)
 
-  await runReactNativeBundleCommand(
+  metroBundle({
+    bundleCommand,
     bundleName,
-    false, // development
+    development: false,
     entryFile,
     outputDir,
-    os, // platform
+    platform: os,
     sourcemapOutput,
-    ['--reset-cache', ...extraBundlerOptions]
-  )
+    extraBundlerOptions,
+  })
+
   if (shouldBuildSourceMaps && useHermes) {
     await runHermesEmitBinaryCommand(bundleName, outputDir, sourcemapOutput, extraHermesFlags)
   }

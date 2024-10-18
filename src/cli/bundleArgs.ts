@@ -5,3 +5,4 @@ export const bundleArgs = <T = {}>(yargs: Argv<T>) =>
     .option('base', { type: 'string', demandOption: true })
     .option('reinstallNodeModulesCommand', { type: 'string', alias: ['npm'] })
     .option('rest', { type: 'string', default: '' })
+    .option('bundle-command', { type: 'string' })
