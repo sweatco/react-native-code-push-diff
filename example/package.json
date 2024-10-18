@@ -12,6 +12,7 @@
   "dependencies": {
     "react": "18.3.1",
     "react-native": "0.75.4",
+    "react-native-code-push": "^9.0.0",
     "react-native-code-push-diff": "workspace:*"
   },
   "devDependencies": {
@@ -25,7 +26,8 @@
     "appcenter-cli": "^2.14.0",
     "babel-plugin-module-resolver": "^5.0.0",
     "pod-install": "^0.1.0",
-    "react-native-builder-bob": "^0.30.2"
+    "react-native-builder-bob": "^0.30.2",
+    "react-native-dotenv": "^3.4.11"
   },
   "engines": {
     "node": ">=18"
