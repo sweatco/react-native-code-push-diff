@@ -29,7 +29,7 @@ yargs(hideBin(process.argv))
     (yargs) => bundleArgs(appcenterArgs(yargs)).option('app', { type: 'string', demandOption: true, alias: ['a'] }),
     async (args) => {
       const bundlerConfig = buildBundleConfig({ ...args })
-      const version = args.version ?? (await getAppVersion(bundlerConfig))
+      const version = args.targetBinaryVersion ?? (await getAppVersion(bundlerConfig))
       const result = await bundle({ ...bundlerConfig, base: args.base })
 
       const keys =
