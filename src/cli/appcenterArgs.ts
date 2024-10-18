@@ -9,7 +9,7 @@ export const appcenterArgs = <T = {}>(yargs: Argv<T>) =>
     .option('disabled', { alias: 'x', default: false })
     .option('mandatory', { alias: 'm', default: false })
     .option('target-binary-version', {
-      alias: ['t', 'version'],
+      alias: ['t'],
       type: 'string',
     })
     .option('bundleName', {
