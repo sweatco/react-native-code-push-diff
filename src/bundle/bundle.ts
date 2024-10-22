@@ -48,6 +48,7 @@ const bundleReactNative = async (config: BundlerConfig, shouldBuildSourceMaps?: 
     extraHermesFlags = [],
     useHermes = true,
     outputDir,
+    development,
   } = config
   rmRf(outputDir)
   mkdir(outputDir)
@@ -59,7 +60,7 @@ const bundleReactNative = async (config: BundlerConfig, shouldBuildSourceMaps?: 
   metroBundle({
     bundleCommand,
     bundleName,
-    development: false,
+    development,
     entryFile,
     outputDir,
     platform: os,
@@ -87,14 +88,14 @@ const checkoutAndBuild = async (bundlerConfig: BundlerConfig, commit: string) =>
 }
 
 const readBaseHashes = async (bundlerConfig: BundlerConfig, base: string): Promise<Hashes> => {
-  if (!process.env.CHANGED_ASSETS_PATH) {
+  if (!process.env.BASE_ASSETS_PATH) {
     info(`Bundling for ${base}`)
     const baseOutput = await checkoutAndBuild(bundlerConfig, base)
     const baseHashes = await hashes(baseOutput.outputDir)
-    const changedAssetsPath = path.join(tmpdir(), 'changed-assets.json')
-    fs.writeFileSync(changedAssetsPath, JSON.stringify(baseHashes))
-    process.env.CHANGED_ASSETS_PATH = changedAssetsPath
+    const baseAssetsPath = path.join(tmpdir(), 'base-assets.json')
+    fs.writeFileSync(baseAssetsPath, JSON.stringify(baseHashes))
+    process.env.BASE_ASSETS_PATH = baseAssetsPath
   }
 
-  return JSON.parse(fs.readFileSync(process.env.CHANGED_ASSETS_PATH, 'utf8'))
+  return JSON.parse(fs.readFileSync(process.env.BASE_ASSETS_PATH, 'utf8'))
 }

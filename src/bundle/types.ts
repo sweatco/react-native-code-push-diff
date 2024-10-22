@@ -23,6 +23,7 @@ export interface BundlerConfig {
   useHermes?: boolean
   extraHermesFlags?: string[]
   bundleCommand?: string
+  development?: boolean
 }
 
 type Config = Partial<BundlerConfig> & VersionSearchParams

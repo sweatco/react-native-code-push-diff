@@ -1,4 +1,4 @@
-import type { Argv } from 'yargs'
+import { type Argv } from 'yargs'
 
 export const appcenterArgs = <T = {}>(yargs: Argv<T>) =>
   yargs
@@ -16,7 +16,7 @@ export const appcenterArgs = <T = {}>(yargs: Argv<T>) =>
       alias: 'b',
       type: 'string',
     })
-    .option('development', { type: 'string' })
+    .option('development', { type: 'boolean', default: false })
     .option('entry-file', { alias: 'e', type: 'string' })
     .option('gradle-file', { alias: 'g', type: 'string' })
     .option('pod-file', { type: 'string' })
@@ -30,5 +30,5 @@ export const appcenterArgs = <T = {}>(yargs: Argv<T>) =>
     .option('output-dir', { alias: ['o', 'output-path'], type: 'string' })
     .option('extra-bundler-option', { alias: ['extra-bundler-options'], default: [], type: 'array' })
     .option('extra-hermes-flag', { alias: ['extra-hermes-flags'], type: 'array', default: [] })
-    .option('use-hermes', { default: true })
+    .option('use-hermes', { default: true, type: 'boolean' })
     .option('disable-duplicate-release-error', { type: 'boolean', default: true })
