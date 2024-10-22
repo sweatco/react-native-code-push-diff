@@ -9,13 +9,13 @@ interface DiffAssetData extends AssetData {
   mainBundleAssets?: MainAssets
 }
 
-let hashes: Hashes = {}
-const CHANGED_ASSETS_PATH: string | undefined = process.env.CHANGED_ASSETS_PATH
+let baseHashes: Hashes = {}
+const BASE_ASSETS_PATH: string | undefined = process.env.BASE_ASSETS_PATH
 const PLATFORM: string | undefined = process.env.CODE_PUSH_PLATFORM
 
-if (CHANGED_ASSETS_PATH) {
-  const json = fs.readFileSync(CHANGED_ASSETS_PATH, 'utf-8')
-  hashes = JSON.parse(json)
+if (BASE_ASSETS_PATH) {
+  const json = fs.readFileSync(BASE_ASSETS_PATH, 'utf-8')
+  baseHashes = JSON.parse(json)
 }
 
 export async function assetCodepushDiffPlugin(assetData: DiffAssetData) {
@@ -30,7 +30,7 @@ export async function assetCodepushDiffPlugin(assetData: DiffAssetData) {
     const scale = scales[i]
     if (file != null && scale != null) {
       const hash = await fileHash(file)
-      const baselineFile = hashes[hash]
+      const baselineFile = baseHashes[hash]
       if (baselineFile) {
         assets[scale] = mainAssetPath(baselineFile)
       }
