@@ -1,3 +1,5 @@
+import { info } from './utils'
+
 const path = require('path')
 const { spawnSync } = require('child_process')
 
@@ -14,6 +16,8 @@ interface MetroBundleOptions {
   sourcemapOutput?: string
   bundleCommand?: string
   extraBundlerOptions?: string[]
+  verbose?: boolean
+  minify?: boolean
 }
 
 export const metroBundle = ({
@@ -28,6 +32,8 @@ export const metroBundle = ({
   assetsDest = outputDir,
   sourcemapOutputDir = '',
   sourcemapOutput = sourcemapOutputDir ? path.join(sourcemapOutputDir, `${bundleName}.map`) : null,
+  verbose = false,
+  minify = false,
   extraBundlerOptions = [],
 }: MetroBundleOptions) => {
   const args = [
@@ -38,9 +44,13 @@ export const metroBundle = ({
     `--bundle-output=${bundleOutput}`,
     sourcemapOutput && `--sourcemap-output=${sourcemapOutput}`,
     assetsDest && `--assets-dest=${assetsDest}`,
-    resetCache && '--reset-cache',
+    `--minify=${minify}`,
+    resetCache && `--reset-cache`,
+    verbose && `--verbose`,
     ...extraBundlerOptions,
   ].filter(Boolean)
+
+  info(`Running: ${getCliPath()} ${args.join(' ')}`)
 
   spawnSync(getCliPath(), args, { stdio: 'inherit' })
 }

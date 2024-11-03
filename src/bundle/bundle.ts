@@ -66,10 +66,15 @@ const bundleReactNative = async (config: BundlerConfig, shouldBuildSourceMaps?: 
     platform: os,
     sourcemapOutput,
     extraBundlerOptions,
+    verbose: useHermes,
+    minify: !useHermes,
   })
 
   if (shouldBuildSourceMaps && useHermes) {
-    await runHermesEmitBinaryCommand(bundleName, outputDir, sourcemapOutput, extraHermesFlags)
+    await runHermesEmitBinaryCommand(bundleName, outputDir, sourcemapOutput, [
+      '-max-diagnostic-width=80',
+      ...extraHermesFlags,
+    ])
   }
 
   return {
