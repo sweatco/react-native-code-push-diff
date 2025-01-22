@@ -3,17 +3,9 @@ import util from 'util'
 import * as fs from 'fs'
 import { tmpdir } from 'os'
 import * as Path from 'path'
-import type { BundlerConfig, CommandArgs, Os, OsOrApp, VersionSearchParams } from './types'
+import type { BundlerConfig, CommandArgs } from './types'
 
 export const ROOT = process.env.PWD ?? ''
-
-export const {
-  getReactNativeProjectAppVersion,
-} = require('appcenter-cli/dist/commands/codepush/lib/react-native-utils')
-
-export function getAppVersion(versionSearchParams: VersionSearchParams, projectRoot?: string): Promise<string> {
-  return getReactNativeProjectAppVersion(versionSearchParams, projectRoot)
-}
 
 export function isDirectory(path: string): boolean {
   return fs.statSync(path).isDirectory()
@@ -72,17 +64,8 @@ export function installNodeModulesCommand() {
   return 'npm install'
 }
 
-export function getPlatform(app: string): string {
-  const command = `appcenter apps show --app ${app} --output json`
-  const json = JSON.parse(child.execSync(command).toString().trim())
-
-  return json.os.toLowerCase()
-}
-
-const hasOs = (args: OsOrApp): args is Os => 'os' in args && (args.os === 'ios' || args.os === 'android')
-
 export function buildBundleConfig(args: CommandArgs): BundlerConfig {
-  const os = hasOs(args) ? args.os : getPlatform(args.app)
+  const { os } = args
 
   return {
     outputDir: Path.join(tmpdir(), 'codepush-diff'),
@@ -90,6 +73,7 @@ export function buildBundleConfig(args: CommandArgs): BundlerConfig {
     bundleName: os === 'ios' ? 'main.jsbundle' : `index.${os}.bundle`,
     ...args,
     os,
+    platform: os,
     entryFile: args.entryFile ?? defaultEntryFile(os),
     reinstallNodeModulesCommand: args.reinstallNodeModulesCommand ?? installNodeModulesCommand(),
   }

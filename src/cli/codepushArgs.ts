@@ -1,8 +1,9 @@
 import { type Argv } from 'yargs'
 
-export const appcenterArgs = <T = {}>(yargs: Argv<T>) =>
+export const codepushArgs = <T = {}>(yargs: Argv<T>) =>
   yargs
     .option('deployment-name', { alias: 'd', default: 'Staging', type: 'string' })
+    .option('cmd', { type: 'string', alias: 'cmd' })
     .option('description', { type: 'string' })
     .option('private-key-path', { alias: 'k', type: 'string' })
     .option('rollout', { alias: 'r', default: '100', type: 'string' })
@@ -32,3 +33,7 @@ export const appcenterArgs = <T = {}>(yargs: Argv<T>) =>
     .option('extra-hermes-flag', { alias: ['extra-hermes-flags'], type: 'array', default: [] })
     .option('use-hermes', { default: true, type: 'boolean' })
     .option('disable-duplicate-release-error', { type: 'boolean', default: true })
+    .option('buildConfigurationName', {
+      alias: 'c',
+      type: 'string',
+    })

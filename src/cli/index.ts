@@ -2,34 +2,30 @@
 
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
-import { appcenterArgs } from './appcenterArgs'
-import { buildBundleConfig, getAppVersion, info } from '../bundle/utils'
+import { codepushArgs } from './codepushArgs'
+import { buildBundleConfig, info } from '../bundle/utils'
+import { getReactNativeProjectAppVersion } from './getReactNativeProjectAppVersion'
 import { bundle } from '../bundle/bundle'
 import { execSync } from 'child_process'
 import { bundleArgs } from './bundleArgs'
 
 yargs(hideBin(process.argv))
   .command(
-    'bundle <app>',
+    'bundle <platform>',
     'Bundle the app for release.',
-    (yargs) =>
-      bundleArgs(appcenterArgs(yargs)).positional('app', {
-        type: 'string',
-        demandOption: true,
-        alias: ['platform', 'os'],
-      }),
+    (yargs) => bundleArgs(codepushArgs(yargs)),
     async (args) => {
       const result = await bundle({ ...args })
       console.log(result)
     }
   )
   .command(
-    'release-react',
-    'Build and release a React Native app to AppCenter.',
-    (yargs) => bundleArgs(appcenterArgs(yargs)).option('app', { type: 'string', demandOption: true, alias: ['a'] }),
+    'release-react <platform>',
+    'Build and release a React Native app to a Code Push server.',
+    (yargs) => bundleArgs(codepushArgs(yargs)).option('app', { type: 'string', demandOption: true, alias: ['a'] }),
     async (args) => {
       const bundlerConfig = buildBundleConfig({ ...args })
-      const version = args.targetBinaryVersion ?? (await getAppVersion(bundlerConfig))
+      const version = args.targetBinaryVersion ?? (await getReactNativeProjectAppVersion(bundlerConfig))
       const result = await bundle({ ...bundlerConfig, base: args.base })
 
       const keys =
@@ -49,7 +45,7 @@ yargs(hideBin(process.argv))
           .map(([key, value]) => `${key} ${value}`)
           .join(' ') + ` ${args.rest}`
 
-      const command = `appcenter codepush release ${keys}`
+      const command = `${args.cmd} release ${keys}`
 
       info(`Realising bundle with command: ${command}`)
 
