@@ -68,7 +68,6 @@
     "@types/jest": "^28.1.2",
     "@types/react": "~17.0.21",
     "@types/react-native": "0.70.0",
-    "appcenter-cli": "^2.14.0",
     "commitlint": "^17.0.2",
     "del-cli": "^5.0.0",
     "eslint": "^8.4.1",
@@ -88,7 +87,6 @@
     "@types/react": "17.0.21"
   },
   "peerDependencies": {
-    "appcenter-cli": "*",
     "react": "*",
     "react-native": "*"
   },
@@ -153,7 +151,10 @@
     ]
   },
   "dependencies": {
-    "simple-git": "^3.22.0",
+    "gradle-to-js": "2.0.1",
+    "plist": "^3.0.6",
+    "semver": "^7.5.3",
+    "xcode": "^3.0.1",
     "yargs": "^17.7.2"
   }
 }
